@@ -29,5 +29,6 @@ sure the report looks orderly enough to be presented for the board of directors 
 as dynamic as possible, make sure you use reference where applicable. You are expected to be able to answer questions 
 about the calculations and analysis, so be prepared.
 
-Template
+##### Template
+
 ![image](https://github.com/AlexanderJarvheden/DD1317-Programming-Techniques/assets/131161901/8105e9b7-5191-44c1-be12-f8bd3950aee1)
