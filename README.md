@@ -1,4 +1,4 @@
-# DD1317-Programming-Techniques
+# DD1317 Programming Techniques
 Programming in Python and Data Analysis in Excel
 
 An introductory course in programming technique with Python. It also provides a short module to introduce programming with spreadsheets.
