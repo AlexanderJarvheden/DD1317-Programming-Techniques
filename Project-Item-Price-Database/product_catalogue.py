@@ -8,21 +8,21 @@ class Product_Catalogue:
 
     def add_product(self, product, quantity):
         """Adds a product to catalogue"""
-        self.inventory[product.get_code()] = quantity
-        self.product_info[product.get_code()] = product
+        self.inventory[product.code] = quantity
+        self.product_info[product.code] = product
 
     def remove_quantity(self, product, purchased_quantity):
-        inventory_quantity = self.inventory[product.get_code()]
+        inventory_quantity = self.inventory[product.code]
         while True:
             if inventory_quantity >= purchased_quantity:
                 inventory_quantity -= purchased_quantity
                 return
             else:
-                print(f"Invalid amount of {product.get_name()}s, only {inventory_quantity} in inventory, try again.")
+                print(f"Invalid amount of {product.name}s, only {inventory_quantity} in inventory, try again.")
 
     def get_product(self, code):
         for product in self.product_info:
-            if product.get_code() == code:
+            if product.code == code:
                 return product
 
     def scan_purchase(self):
