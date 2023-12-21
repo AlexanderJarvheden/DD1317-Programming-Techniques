@@ -7,57 +7,65 @@ class Product_Catalogue:
         self.product_info = {}
 
     def add_product(self, product, quantity):
-        """Adds a product to catalogue"""
-        self.inventory[product.code] = quantity
+        """Adds a product from database to catalogue"""
+        self.inventory[product.code] = int(quantity)
         self.product_info[product.code] = product
-
+    
     def remove_quantity(self, product, purchased_quantity):
-        inventory_quantity = self.inventory[product.code]
-        while True:
-            if inventory_quantity >= purchased_quantity:
-                inventory_quantity -= purchased_quantity
-                return
-            else:
-                print(f"Invalid amount of {product.name}s, only {inventory_quantity} in inventory, try again.")
+        self.inventory[product.code] -= purchased_quantity
 
     def get_product(self, code):
-        for product in self.product_info:
-            if product.code == code:
-                return product
+        return self.product_info.get(code)
 
-    def scan_purchase(self):
-        receipt = {}
-        total_amount = 0
-        total_sum = 0
+    # def print_receipt(self, receipt):
+    #     total_amount = 0
+    #     total_sum = 0
 
-        while True:
-            scanned_purchase = input()
-            code = scanned_purchase.split()[0]
-            amount = scanned_purchase.split()[1]
+    #     # Display the receipt
+    #     print("\nPurchase Accepted!\nReceipt:")
+    #     print("{:<10} {:<5} {:<10} {:<10}".format("Product", "Amount", "Price", "Total"))
+    #     print("-" * 40)
 
-            if scanned_purchase == "#":
-                return
-            
-            elif isinstance(code, int) and isinstance(amount, int):
-                self.remove_quantity(self.get_product(code), amount)
-                receipt[code] += amount
+    #     for code in receipt.keys():
+    #         product = self.get_product(code)
+    #         row = f"{product.name}    {receipt[code]}     {product.price}     {round(receipt[code]*product.price, 2)}"
+    #         total_amount += receipt[code]
+    #         total_sum += round(receipt[code]*product.price, 2)
+    #         print("{:<10} {:<5} {:<10} {:<10}".format(*row.split()))
 
-            elif isinstance(code, int):
-                self.remove_quantity(self.get_product(code), 1)
-                receipt[code] += 1
-            break
+    #     print("-" * 40)
+    #     print("{:<10} {:<5} {:<10} {:<10}".format("Total", f"{total_amount}", "", f"{total_sum}"))
 
-        header = "Product    Amount    Price    Total"
-        print("{:<10} {:<5} {:<10} {:<10}".format("Product", "Amount", "Price", "Total"))
-        print("-" * 40)
-        print("{:<10} {:<5} {:<10} {:<10}".format(*header.split()))
+    # def scan_purchase(self):
+    #     receipt = {}
 
-        for code in receipt:
-            product = self.get_product(code)
-            row = f"{product.name}    {receipt[code]}     {product.price}     {receipt[code]*product.price}"
-            total_amount += receipt[code]
-            total_sum += receipt[code]*product.price
-            print("{:<10} {:<5} {:<10} {:<10}".format(*row.split()))
+    #     scanning = True
+    #     scan_count = 1
+    #     print("\nPress '%' to undo, '#' to finish\nEnter 'code+space+amount'")
+    #     while scanning:
+    #         scanned_purchase = input(f"Scan {scan_count}: ")
+    #         scan_count += 1
+    #         scanned_items = scanned_purchase.split()
 
-        print("-" * 40)
-        print("{:<10} {:<5} {:<10} {:<10}".format("Total", f"{total_amount}", "", f"{total_sum}"))
+    #         if len(scanned_items) >= 2:
+    #             amount = scanned_items[1]
+    #         else:
+    #             amount = 1
+
+    #         code = scanned_purchase.split()[0]
+
+    #         if code == "#":
+    #             scanning = False
+    #         elif code in self.product_info:
+    #             product = self.get_product(code)
+    #             while True:
+    #                 if int(amount) <= self.inventory[code]:
+    #                     self.remove_quantity(product, int(amount))
+    #                     receipt.setdefault(code, 0)
+    #                     receipt[code] += int(amount)
+    #                     break
+    #                 else: 
+    #                     print(f"Only {self.inventory[code]} in inventory:")
+    #                     amount = input(f"Enter a valid amount: ")
+
+    #     self.print_receipt(receipt)
