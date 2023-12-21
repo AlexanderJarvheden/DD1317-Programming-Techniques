@@ -18,7 +18,7 @@ def scan_purchase(catalogue):
     receipt = {}
     scanning = True
     scan_count = 1
-    print("\nPress '%' to undo, '#' to finish\nEnter 'code+space+amount'")
+    print("\nPress '%' to undo, '#' to finish\nFor products enter 'CODE + 'space' + AMOUNT'")
     while scanning:
         scanned_purchase = input(f"Scan {scan_count}: ")
         scan_count += 1
@@ -30,6 +30,8 @@ def scan_purchase(catalogue):
         code = scanned_purchase.split()[0]
         if code == "#":
             scanning = False
+        elif code == "%":
+            undo_scan(catalogue, receipt)
         elif code in catalogue.product_info:
             product = catalogue.get_product(code)
             while True:
@@ -42,3 +44,8 @@ def scan_purchase(catalogue):
                     print(f"Only {catalogue.inventory[code]} in inventory:")
                     amount = input(f"Enter a valid amount: ")
     print_receipt(catalogue, receipt)
+
+def undo_scan(catalogue, receipt):
+    product_to_undo = input("Which product do you want to undo?\nEnter the product code: ")
+    amount_to_undo = input(f"How many to undo - {catalogue.product_info[product_to_undo].name}")
+    receipt[product_to_undo] -= int(amount_to_undo)

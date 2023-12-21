@@ -17,4 +17,3 @@ def read_file(catalogue):
             return
         else: 
             print("The suggested filename does not exist, please try again")
-
