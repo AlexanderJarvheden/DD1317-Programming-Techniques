@@ -1,11 +1,12 @@
-import file_management
+from file_management import File_input_GUI
 from store import Store
-import receipt_management
+from receipt_management import ScannerGUI
 
 def main():
     store = Store()
-    file_management.read_file(store)
-    while True:
-        receipt_management.scan_purchase(store)
+    filemanagement = File_input_GUI(store)
+    ScannerGUI(store, filemanagement.filename)
 
-main()
+
+if __name__ == "__main__":
+    main()
