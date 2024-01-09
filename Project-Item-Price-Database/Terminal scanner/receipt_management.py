@@ -1,22 +1,24 @@
 def print_receipt(store, receipt):
-    """Prints the final receipt"""
+    """Prints and formats the final receipt"""
     total_amount = 0
     total_sum = 0
 
     # Display the receipt
     print("\nPurchase Accepted!\nReceipt:\n")
 
-    # format inspiration from https://thepythonguru.com/python-string-formatting/
+    # Format inspiration from https://thepythonguru.com/python-string-formatting/
     print("{:<10} {:<5} {:<10} {:<10}".format("Product", "Amount", "Price", "Total"))
     print("-" * 40)
+    
+    # Iterate over all registered products in the receipt and update amount and sum
     for code in receipt.keys():
         product = store.get_product(code)
-        row = f"{product.name} {receipt[code]} {product.price} {round(receipt[code]*product.price, 2)}"
+        receipt_row = f"{product.name} {receipt[code]} {product.price} {round(receipt[code]*product.price, 2)}"
         total_amount += receipt[code]
         total_sum += round(receipt[code] * product.price, 2)
         print(
-            "{:<10} {:<5} {:<10} {:<10}".format(*row.split())
-        )  # unpack the list as separate arguments
+            "{:<10} {:<5} {:<10} {:<10}".format(*receipt_row.split()) # Unpack the list as separate arguments
+        )  
     print("-" * 40)
     print(
         "{:<10} {:<5} {:<10} {:<10}".format(
@@ -27,11 +29,16 @@ def print_receipt(store, receipt):
 
 def scan_purchase(store):
     """Handles the whole scanning process, calling on functions that do calculations, undo etc"""
+    # Receipt that stores the scanned products and amount
     receipt = {}
+
+    # Keeps count of amount of scans to display it during scanning process
     scan_count = 1
+
+    # Save original inventory in case scanner exits whilst scanning a purchase
     original_inventory = dict(
         store.inventory
-    )  # Save original inventory in case scanner exits whilst scanning a purchase
+    ) 
     print(
         "\nPress '%' to undo, '#' to finish, '&' to exit\nFor products-> enter 'CODE + 'space' + AMOUNT'"
     )
@@ -40,13 +47,18 @@ def scan_purchase(store):
         scanned_purchase = input(f"Scan {scan_count}: ")
         scan_count += 1
         scanned_items = scanned_purchase.split()
-        amount = valid_amount(scanned_items)
+        amount = interpret_scanned_amount(scanned_items)
         code = scanned_purchase.split()[0]
 
+        # User wants to finish the receipt
         if code == "#":
             scanning = False
+
+        # User wants to undo a product amount
         elif code == "%":
             undo_scan(store, receipt)
+        
+        # User wants to turn off the scanner
         elif code == "&":
             print("Signing off...")
             store.inventory = original_inventory
@@ -57,8 +69,10 @@ def scan_purchase(store):
             while True:
                 if amount <= store.inventory[code]:
                     store.remove_quantity(product, amount)
+                    # If product has not been registered earlier
                     receipt.setdefault(code, 0)
                     receipt[code] += amount
+                    print(f"Scanned {amount} {product.name} (Code: {code})")
                     break
                 else:
                     print(f"Only {store.inventory[code]} in inventory:")
@@ -68,8 +82,8 @@ def scan_purchase(store):
     print_receipt(store, receipt)
 
 
-def valid_amount(usr_input):
-    """Chooses amount based on input, if no amount is written it is 1"""
+def interpret_scanned_amount(usr_input):
+    """Chooses scanned amount based on input, if no amount is written it is 1"""
     if len(usr_input) >= 2:
         amount = usr_input[1]
         amount = amount_to_int(amount)
@@ -79,10 +93,13 @@ def valid_amount(usr_input):
 
 
 def amount_to_int(amount):
-    """Converts the amount to an integer"""
+    """Converts the amount to a fit integer for the program (non negative)"""
     while True:
         try:
             amount = int(amount)
+            if amount < 0:
+                print("Error: Integer must be non-negative.")
+                raise ValueError('Error: Integer must be non-negative.')
             break
         except ValueError:
             amount = input("Enter a valid amount (integer): ")
@@ -97,10 +114,16 @@ def undo_scan(store, receipt):
     product_to_undo = check_if_product_exists(product_to_undo, store, receipt, 1)
 
     amount_to_undo = input(
-        f"How many to undo - {store.product_catalogue[product_to_undo].name}"
+        f"How many to undo - {store.product_catalogue[product_to_undo].name}: "
     )
     amount_to_undo = amount_to_int(amount_to_undo)
     receipt[product_to_undo] -= amount_to_undo
+
+    if receipt[product_to_undo] == 0:
+        # If all amount is gone, delete it from the receipt to avoid displaying a '0' amount
+        del receipt[product_to_undo]
+    print(f"Unscanned {amount_to_undo} {store.product_catalogue[product_to_undo].name} (Code: {product_to_undo})")
+    
 
 
 def check_if_product_exists(code, store, receipt, check_receipt: bool):
